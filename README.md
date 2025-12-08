@@ -128,7 +128,7 @@ python tests/debug_position.py
 ✔ Fazer commits frequentes:
 
 git init
-git remote add origin https://github.com/danieltorreess/AutomacoesItau.git
+git remote add origin https://github.com/teste/teste.git
 git branch -M main
 git commit -m "Primeiro commit - Automacoes Itau"
 git push -u origin main
