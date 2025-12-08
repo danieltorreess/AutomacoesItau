@@ -1,0 +1,32 @@
+# Virtual env
+venv/
+ENV/
+env/
+
+# VSCode
+.vscode/
+
+# Python cache
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+
+# Logs
+*.log
+
+# OS files
+Thumbs.db
+.DS_Store
+
+# Excel temporaries
+~$*.xlsx
+~$*.xlsm
+*.tmp
+
+# Arquivos temporários da automação
+temp/
+*.csv
+
+# Ignore creds (se algum dia tiver)
+*.env

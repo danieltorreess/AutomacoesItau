@@ -1,0 +1,7 @@
+{
+    "tenant_id": "SEU_TENANT",
+    "client_id": "SEU_CLIENT_ID",
+    "client_secret": "SEU_CLIENT_SECRET",
+    "email_folder_path": ["Inbox", "Itau", "CSR"],
+    "output_path": "\\\\BRSBESRV960\\publico\\REPORTS\\ITAU\\CSR IC\\BASE DISCADOR"
+}
