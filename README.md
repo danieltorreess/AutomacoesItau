@@ -38,6 +38,8 @@ Exemplos corretos:
 python -m pip install --upgrade pip
 python -m pip install pandas openpyxl
 python -m pip install pywin32
+python -m pip install browser-cookie3 requests
+python -m pip install selenium selenium-wire webdriver-manager
 
 Exemplo incorreto (bloqueado pelo SISGAG):
 pip install pandas
@@ -72,6 +74,10 @@ python -m src.BKO.app
 ▶️ CSR
 Baixa e processa arquivos dos e-mails
 python -m src.CSR.app
+
+▶️ ItauScout
+Move todas as bases do Scout para seus devidos diretórios na rede
+python -m src.ItauScout.processar_bases
 
 🗂 10. Estrutura completa do projeto
 DesenvolvimentoBackEnd/
