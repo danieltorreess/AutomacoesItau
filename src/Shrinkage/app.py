@@ -8,7 +8,7 @@ from .atendimento_processor import AtendimentoProcessor
 
 # ===== CONFIGURAÇÕES =====
 OUTPUT_PATH = r"\\BRSBESRV960\Publico\REPORTS\ITAU\SHRINKAGE"
-ESPELHO_TESTE = os.path.join(OUTPUT_PATH, "HUB_ATENDIMENTO_ATT_TESTE.xlsx")
+ESPELHO_TESTE = os.path.join(OUTPUT_PATH, "HUB_ATENDIMENTO_ATT_NEW.xlsx")
 
 
 def main():
@@ -26,7 +26,7 @@ def main():
     # 2️⃣ BUSCAR E-MAILS NA PASTA SHRINKAGE
     # ======================================================
     email_service = EmailServiceShrinkage()
-    emails = email_service.buscar_emails_do_dia_anterior()
+    emails = email_service.buscar_emails_ultimos_dias(dias=3)
 
     if not emails:
         print("⚠️ Nenhum e-mail encontrado hoje na pasta Shrinkage.")
@@ -82,7 +82,7 @@ def main():
     # 6️⃣ FINALIZAÇÃO
     # ======================================================
     print("\n✅ Processo Shrinkage finalizado com sucesso!")
-    print(f"📁 Arquivo TESTE gerado:\n   → {ESPELHO_TESTE}\n")
+    print(f"📁 Arquivo New gerado:\n   → {ESPELHO_TESTE}\n")
 
 
 if __name__ == "__main__":

@@ -46,17 +46,35 @@ class EmailServiceShrinkage:
                     break
 
         return mensagens
+    
+    # ---------------------------------------------------------
+    # BUSCA DO ARQUIVO MAIS ATUAL
+    # ---------------------------------------------------------
+    def buscar_emails_ultimos_dias(self, dias=3):
+        folder = self._get_target_folder()
+        mensagens = []
 
-    # ---------------------------------------------------------
-    # BUSCA DO DIA ATUAL
-    # ---------------------------------------------------------
-    def buscar_emails_do_dia_atual(self):
-        referencia = datetime.today()
-        return self._buscar_emails_por_data(referencia)
+        folder.Items.Sort("[ReceivedTime]", True)  # mais novos primeiro
 
-    # ---------------------------------------------------------
-    # BUSCA DO DIA ANTERIOR
-    # ---------------------------------------------------------
-    def buscar_emails_do_dia_anterior(self):
-        referencia = datetime.today() - timedelta(days=3)
-        return self._buscar_emails_por_data(referencia)
+        hoje = datetime.today().date()
+
+        for msg in folder.Items:
+            if msg.Class != 43:
+                continue
+
+            assunto = msg.Subject.lower()
+            if "relatórios att" not in assunto:
+                continue
+
+            # diferença de dias
+            diff = (hoje - msg.ReceivedTime.date()).days
+
+            if 0 <= diff < dias:
+                # precisa conter um .msg dentro
+                for att in msg.Attachments:
+                    if att.FileName.lower().endswith(".msg"):
+                        mensagens.append(msg)
+                        break
+
+        return mensagens
+

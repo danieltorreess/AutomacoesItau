@@ -24,59 +24,67 @@ class ShrinkageDownloader:
 
     def processar_emails(self, emails):
         """
-        Para cada e-mail do dia anterior:
-        - Abre o .msg interno
-        - Extrai anexos ATT-YYYYMM
-        - Se houver arquivos duplicados no mesmo dia, mantém o mais recente
+        Nova lógica:
+        - Sempre começar pelo e-mail mais recente
+        - Extrair anexos ATT-* desse e-mail
+        - Anotar quais bases já vieram
+        - Se estiver faltando alguma base, continuar indo para os próximos e-mails
         """
 
         if not emails:
-            print("⚠️ Nenhum e-mail encontrado para processar no Shrinkage.")
+            print("⚠️ Nenhum e-mail encontrado para processar.")
             return {}
 
-        # Ordena e-mails do mais recente pro mais antigo
+        # Ordenar: mais recente primeiro
         emails = sorted(emails, key=lambda m: m.ReceivedTime, reverse=True)
 
-        arquivos_final = {}  
-        # Exemplo:
-        # {
-        #   "ATT-202512 - HUB Performance.xlsm": "caminho/salvo",
-        #   "ATT-202512 - HUB Agentes.xlsm": "caminho/salvo",
-        # }
+        print(f"📨 Encontrados {len(emails)} e-mails. Iniciando processamento inteligente...\n")
 
-        print(f"📨 Processando {len(emails)} e-mails do dia...")
+        # Bases esperadas
+        bases_esperadas = {
+            "agentes": None,
+            "atendimento": None,
+            "performance": None
+        }
 
+        # Controle final
+        arquivos_final = {}
+
+        # Para cada e-mail (apenas se faltar base)
         for email in emails:
-            hora = email.ReceivedTime.strftime("%H:%M:%S")
-            print(f"\n🔎 Processando e-mail recebido às {hora}...")
 
-            # Extrai anexos ATT-YYYYMM de dentro do .msg
+            faltando = [k for k, v in bases_esperadas.items() if v is None]
+            if not faltando:
+                break  # já temos tudo
+
+            hora = email.ReceivedTime.strftime("%H:%M:%S")
+            print(f"🔎 Processando e-mail das {hora}...")
+
             anexos = self.extractor.extrair_anexos_att(email, self.output_path)
 
-            if not anexos:
-                print("⚠️ Nenhum ATT-YYYYMM encontrado neste e-mail.")
-                continue
-
-            # Para cada arquivo extraído, manter somente o mais recente
             for caminho in anexos:
-                nome_arquivo = os.path.basename(caminho)
+                nome = os.path.basename(caminho).lower()
 
-                # Se ainda não temos esse arquivo → usar este
-                if nome_arquivo not in arquivos_final:
-                    arquivos_final[nome_arquivo] = caminho
-                    continue
+                if "agentes" in nome and bases_esperadas["agentes"] is None:
+                    bases_esperadas["agentes"] = caminho
+                    arquivos_final[os.path.basename(caminho)] = caminho
 
-                # Se já existe, substitui pelo mais recente (tabela já ordenada)
-                print(f"♻️ Substituindo versão antiga de {nome_arquivo} pela mais recente.")
+                if "atendimento" in nome and bases_esperadas["atendimento"] is None:
+                    bases_esperadas["atendimento"] = caminho
+                    arquivos_final[os.path.basename(caminho)] = caminho
 
-                # Nada a fazer porque o arquivo salvo já é sobrescrito sempre,
-                # basta atualizar o dicionário
-                arquivos_final[nome_arquivo] = caminho
+                if "performance" in nome and bases_esperadas["performance"] is None:
+                    bases_esperadas["performance"] = caminho
+                    arquivos_final[os.path.basename(caminho)] = caminho
 
-        print("\n✅ Extração concluída!")
+        print("\n📌 Resultado final das bases encontradas:")
 
-        print("\n📁 Arquivos finais considerados para o SHRINKAGE:")
-        for nome, path in arquivos_final.items():
-            print(f"   → {nome}")
+        for base, path in bases_esperadas.items():
+            if path:
+                print(f"   ✓ {base.capitalize()} encontrado: {path}")
+            else:
+                print(f"   ⚠️ {base.capitalize()} NÃO encontrado nos últimos e-mails.")
+
+        print("\n✅ Seleção final concluída!\n")
 
         return arquivos_final
