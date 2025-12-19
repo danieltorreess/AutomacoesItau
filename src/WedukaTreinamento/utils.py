@@ -9,7 +9,7 @@ def get_date_range():
     fim = hoje.strftime("%d/%m/%Y")
     return f"{inicio} - {fim}"
 
-def wait_for_download(download_dir: Path, timeout=60):
+def wait_for_download(download_dir: Path, timeout=120):
     end_time = time.time() + timeout
     while time.time() < end_time:
         files = list(download_dir.glob("download_*.xlsx"))

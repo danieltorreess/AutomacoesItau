@@ -78,42 +78,81 @@ python -m src.CSR.app
 
 ▶️ ItauScout
 Move todas as bases do Scout para seus devidos diretórios na rede
-python -m src.ItauScout.processar_bases
+python -m src.ItauScout.app
+
+▶️ FalhasOperacionais
+Move todas as bases do NGG para seus devidos diretórios na rede
+python -m src.FalhasOperacionais.app
+
+▶️ WedukaTreinamento
+Navega na ferramenta Weduka, extrai os repositórios listados e move todas as bases de procedimentos para seus devidos diretórios na rede
+python -m src.WedukaTreinamento.app
 
 🗂 10. Estrutura completa do projeto
 DesenvolvimentoBackEnd/
 │
 ├── src/
 │   ├── BKO/
+│   │   ├── __pycache__/
 │   │   ├── app.py
 │   │   ├── email_service.py
 │   │   ├── processor.py
 │   │
+│   ├── CSR/
+│   │   ├── __pycache__/
+│   │   ├── __init__.py
+│   │   ├── app.py
+│   │   ├── downloader.py
+│   │   ├── email_service.py
+│   │
+│   ├── FalhasOperacionais/
+│   │   ├── __pycache__/
+│   │   ├── app.py
+│   │
+│   ├── ItauScout/
+│   │   ├── __pycache__/
+│   │   ├── app.py
+│   │
 │   ├── RAeGOV/
+│   │   ├── __pycache__/
 │   │   ├── app.py
 │   │   ├── email_service.py
 │   │   ├── processor.py
 │   │
 │   ├── SAFRA/
+│   │   ├── __pycache__/
 │   │   ├── app.py
 │   │   ├── downloader.py
 │   │   ├── email_service.py
 │   │   ├── excel_utils.py
 │   │
 │   ├── Shrinkage/
+│   │   ├── __pycache__/
+│   │   ├── __init__.py
 │   │   ├── app.py
+│   │   ├── atendimento_processor.py
 │   │   ├── downloader.py
 │   │   ├── email_service.py
-│   │   ├── atendimento_processor.py
 │   │   ├── msg_extractor.py
-│
+│   │
+│   ├── WedukaTreinamento/
+│   │   ├── __pycache__/
+│   │   ├── app.py
+│   │   ├── browser.py
+│   │   ├── config.py
+│   │   ├── utils.py
+│   │   ├── weduka_bot.py
+│   │   ├── test_chrome.py
+│   │   ├── README.md
+│   │
 ├── tests/
 │   ├── debug_position.py
 │   ├── testar_explosao.py
 │   ├── teste.py
 │
-├── venv/                     # Ignorado no Git
+├── venv/                      # Ambiente virtual (ignorado no Git)
 │
+├── .env                       # Variáveis de ambiente (ignorado)
 ├── .gitignore
 ├── README.md
 ├── requirements.txt
