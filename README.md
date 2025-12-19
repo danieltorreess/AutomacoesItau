@@ -40,6 +40,7 @@ python -m pip install pandas openpyxl
 python -m pip install pywin32
 python -m pip install browser-cookie3 requests
 python -m pip install selenium selenium-wire webdriver-manager
+python -m pip install playwright
 
 Exemplo incorreto (bloqueado pelo SISGAG):
 pip install pandas
@@ -122,7 +123,7 @@ DesenvolvimentoBackEnd/
 🔐 11. Uso de arquivos de configuração
 settings.json → usado localmente
 settings.example.json → modelo que deve ir para o GitHub
-Nunca enviar credenciais para o repositório.
+Nunca enviar credenciais para o repositório.p
 
 🧪 12. Testes auxiliares
 python tests/testar_explosao.py
