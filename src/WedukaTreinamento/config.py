@@ -9,7 +9,15 @@ DEST_DIR = Path(r"\\BRSBESRV960\Publico\REPORTS\ITAU\WEDUKA_TREINAMENTO")
 
 # Repositórios a extrair
 REPOSITORIOS = [
+    "Banco Pessoa Física",
+    "Empresas",
     "Cartões",
+    "Geral Negócios",
+    "Financiamento de Veículos",
+    "Consignado PF",
+    "Rede",
+    "NPC",
+    "Backoffice Cartões",
     "Cartões PJ",
 ]
 
