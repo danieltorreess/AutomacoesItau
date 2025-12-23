@@ -8,7 +8,8 @@ from selenium.webdriver.common.action_chains import ActionChains
 from src.WedukaTreinamento.utils import (
     get_date_range,
     wait_for_download,
-    move_and_rename
+    move_and_rename,
+    xlsx_to_csv
 )
 
 
@@ -101,11 +102,20 @@ class WedukaBot:
 
         self.driver.get(export_url)
 
-        file = wait_for_download(self.config.DOWNLOAD_DIR)
-        new_name = f"{self.config.FILE_PREFIX}{nome_repo.replace(' ', '').lower()}.xlsx"
-        move_and_rename(file, self.config.DEST_DIR, new_name)
+        file_xlsx = wait_for_download(self.config.DOWNLOAD_DIR)
 
-        print(f"[WEDUKA] Arquivo salvo com sucesso em: {self.config.DEST_DIR / new_name}")
+        base_name = f"{self.config.FILE_PREFIX}{nome_repo.replace(' ', '').lower()}"
+        csv_name = f"{base_name}.csv"
+
+        csv_path = self.config.DEST_DIR / csv_name
+
+        # Converte para CSV direto na pasta final
+        xlsx_to_csv(file_xlsx, csv_path)
+
+        # Remove o XLSX temporário
+        file_xlsx.unlink(missing_ok=True)
+
+        print(f"[WEDUKA] Arquivo CSV salvo com sucesso em: {csv_path}")
         print("-" * 70)
 
     def safe_click(self, element):
