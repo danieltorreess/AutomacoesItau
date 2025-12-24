@@ -45,11 +45,25 @@ def wait_for_download(download_dir: Path, timeout=120):
 def normalize_text(value):
     if not isinstance(value, str):
         return value
+
+    # Corrige encoding quebrado
     try:
         value = value.encode("latin1").decode("utf-8")
     except Exception:
         pass
-    return unicodedata.normalize("NFKC", value)
+
+    # Remove quebras de linha internas (CRÍTICO PARA SSIS)
+    value = value.replace("\r", " ")
+    value = value.replace("\n", " ")
+    value = value.replace("_x000D_", " ")
+
+    # Normaliza unicode
+    value = unicodedata.normalize("NFKC", value)
+
+    # Remove múltiplos espaços gerados
+    value = " ".join(value.split())
+
+    return value
 
 
 def xlsx_to_csv(xlsx_path: Path, csv_path: Path):
@@ -70,3 +84,4 @@ def xlsx_to_csv(xlsx_path: Path, csv_path: Path):
         escapechar='\\',
         lineterminator="\n"
     )
+
