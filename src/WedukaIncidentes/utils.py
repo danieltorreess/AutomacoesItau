@@ -25,7 +25,6 @@ def get_days_of_month_until_yesterday(days: int = 6):
     return days_list
 
 
-
 def format_day_range(day: datetime):
     """
     Formata: 01/12/2025 - 01/12/2025
