@@ -6,22 +6,24 @@ import unicodedata
 import csv
 
 
-def get_days_of_month_until_yesterday():
+def get_days_of_month_until_yesterday(days: int = 6):
     """
-    Retorna lista de datas do dia 01 até ontem.
+    Retorna lista com os últimos N dias até ontem.
+    Ex: hoje = 26/12 → retorna 20/12 a 25/12
     """
     today = datetime.today()
-    first_day = today.replace(day=1)
-    last_day = today - timedelta(days=1)
+    end_day = today - timedelta(days=1)
+    start_day = end_day - timedelta(days=days - 1)
 
-    days = []
-    current = first_day
+    days_list = []
+    current = start_day
 
-    while current <= last_day:
-        days.append(current)
+    while current <= end_day:
+        days_list.append(current)
         current += timedelta(days=1)
 
-    return days
+    return days_list
+
 
 
 def format_day_range(day: datetime):
