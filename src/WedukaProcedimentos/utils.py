@@ -1,4 +1,4 @@
-from datetime import datetime
+from datetime import datetime, timedelta
 import time
 import shutil
 from pathlib import Path
@@ -6,11 +6,10 @@ import pandas as pd
 import unicodedata
 import csv
 
-def get_date_range():
+def get_date_range(days: int = 6):
     hoje = datetime.today()
-    inicio = hoje.replace(day=1).strftime("%d/%m/%Y")
-    fim = hoje.strftime("%d/%m/%Y")
-    return f"{inicio} - {fim}"
+    inicio = hoje - timedelta(days=days)
+    return f"{inicio.strftime('%d/%m/%Y')} - {hoje.strftime('%d/%m/%Y')}"
 
 def wait_for_download(download_dir: Path, timeout=120):
     end_time = time.time() + timeout

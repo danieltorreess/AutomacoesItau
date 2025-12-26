@@ -5,7 +5,7 @@ URL_INTEGRATION = "https://base.weduka.com.br/Account/Integration"
 
 # Diretórios
 DOWNLOAD_DIR = Path.home() / "Downloads"
-DEST_DIR = Path(r"\\BRSBESRV960\Publico\REPORTS\ITAU\WEDUKA_TREINAMENTO")
+DEST_DIR = Path(r"C:\ItauWedukaTreinamentos\Procedimentos")
 
 # Repositórios a extrair
 REPOSITORIOS = [

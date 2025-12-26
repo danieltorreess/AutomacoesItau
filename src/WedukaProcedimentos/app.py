@@ -3,9 +3,9 @@ import os
 from pathlib import Path
 from dotenv import load_dotenv
 
-from src.WedukaTreinamento import config
-from src.WedukaTreinamento.browser import get_browser
-from src.WedukaTreinamento.weduka_bot import WedukaBot
+from src.WedukaProcedimentos import config
+from src.WedukaProcedimentos.browser import get_browser
+from src.WedukaProcedimentos.weduka_bot import WedukaBot
 
 
 def main():
