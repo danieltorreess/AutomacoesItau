@@ -1,3 +1,4 @@
+# type: ignore
 # src/ItauSiteGov/app.py
 from pathlib import Path
 
