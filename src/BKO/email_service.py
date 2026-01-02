@@ -1,7 +1,8 @@
 # src/BKO/email_service.py
 import win32com.client as win32
 from datetime import datetime
-
+import unicodedata
+import re
 
 class EmailServiceBKO:
 
@@ -18,17 +19,29 @@ class EmailServiceBKO:
     def _is_today(self, msg):
         return msg.ReceivedTime.date() == datetime.today().date()
 
+    def _normalizar(self, texto: str) -> str:
+        texto = texto.lower()
+        texto = unicodedata.normalize("NFKD", texto)
+        texto = "".join(c for c in texto if not unicodedata.combining(c))
+        texto = re.sub(r"\s+", " ", texto)
+        return texto.strip()
+
     # -------------------------------------------------------
 
     def buscar_email_pos_venda(self):
         """
-        Busca e-mail do DIA ATUAL contendo 'Base Pós venda' no assunto.
+        Busca e-mail do DIA ATUAL relacionado a Pós Venda,
+        independente de acento ou formato.
         """
         for msg in sorted(self.folder.Items, key=lambda x: x.ReceivedTime, reverse=True):
             if not self._is_today(msg):
                 continue
-            if "base pós venda" in msg.Subject.lower():
+
+            subj = self._normalizar(msg.Subject)
+
+            if "pos venda" in subj:
                 return msg
+
         return None
 
     # -------------------------------------------------------

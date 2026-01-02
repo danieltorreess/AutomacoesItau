@@ -23,25 +23,32 @@ class EmailService:
         csr_folder = itau_folder.Folders["CSR"]
         return csr_folder
 
-    def _calcular_data_referencia(self):
+    def _calcular_data_referencia(self, max_dias=7):
         """
-        Regra de negócio:
-        - Segunda → sexta (-3)
-        - Domingo → sexta (-2)
-        - Sábado → sexta (-1)
-        - Demais → dia anterior
+        Volta no tempo até encontrar um dia com e-mails válidos,
+        considerando finais de semana e feriados.
         """
         hoje = datetime.today()
-        weekday = hoje.weekday()  # Monday=0
 
-        if weekday == 0:   # Segunda
-            return hoje - timedelta(days=3)
-        if weekday == 6:   # Domingo
-            return hoje - timedelta(days=2)
-        if weekday == 5:   # Sábado
-            return hoje - timedelta(days=1)
+        for i in range(1, max_dias + 1):
+            data_teste = hoje - timedelta(days=i)
+            data_str = data_teste.strftime("%d.%m.%Y")
 
-        return hoje - timedelta(days=1)
+            regex = rf"BASE PARA DISCADOR CSR IC {data_str}\s+\d{{4}}\s+Horas\.?"
+
+            folder = self._get_target_folder()
+
+            for msg in folder.Items:
+                if msg.Class != 43:
+                    continue
+
+                assunto = self._normalizar_assunto(msg.Subject)
+
+                if re.fullmatch(regex, assunto, re.IGNORECASE):
+                    return data_teste  # 🔥 achou!
+
+        raise Exception("❌ Nenhuma base encontrada nos últimos dias.")
+
 
     def _normalizar_assunto(self, assunto: str) -> str:
         """
