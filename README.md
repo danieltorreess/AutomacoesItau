@@ -84,9 +84,17 @@ python -m src.ItauScout.app
 Move todas as bases do NGG para seus devidos diretórios na rede
 python -m src.FalhasOperacionais.app
 
-▶️ WedukaTreinamento
+▶️ WedukaIncidentes
+Navega na ferramenta Weduka, extrai os repositórios listados e move todas as bases de incidentes para seus devidos diretórios na rede
+python -m src.WedukaIncidentes.app
+
+▶️ WedukaProcedimentos
 Navega na ferramenta Weduka, extrai os repositórios listados e move todas as bases de procedimentos para seus devidos diretórios na rede
-python -m src.WedukaTreinamento.app
+python -m src.WedukaProcedimentos.app
+
+▶️ WedukaAnalticoLog
+Baixa anexo da base de analítico de log diário do Weduka.
+python -m src.WedukaAnaliticoLog.app
 
 🗂 10. Estrutura completa do projeto
 DesenvolvimentoBackEnd/
