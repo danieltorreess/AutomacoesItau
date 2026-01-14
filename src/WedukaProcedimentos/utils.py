@@ -52,13 +52,25 @@ def normalize_text(value):
     if not isinstance(value, str):
         return value
 
-    # Corrige textos que já vieram quebrados (NÃ£o → Não)
+    # Corrige encoding quebrado (ex: NÃ£o → Não)
     try:
         value = value.encode("latin1").decode("utf-8")
     except Exception:
         pass
 
-    # Normaliza unicode
+    # Normalização unicode
     value = unicodedata.normalize("NFKC", value)
+
+    # 🔥 REMOVE QUEBRAS DE LINHA INTERNAS
+    value = value.replace("\r\n", " ")
+    value = value.replace("\n", " ")
+    value = value.replace("\r", " ")
+
+    # 🔥 REMOVE MARCADORES DO EXCEL / XML
+    value = value.replace("_x000D_", " ")
+    value = value.replace("_x000A_", " ")
+
+    # Limpeza final
+    value = " ".join(value.split())
 
     return value
