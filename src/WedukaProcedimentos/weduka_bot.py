@@ -26,8 +26,14 @@ class WedukaBot:
         print("[WEDUKA] Acessando página de integração...")
         self.driver.get(self.config.URL_INTEGRATION)
 
+        # self.wait.until(
+        #     EC.element_to_be_clickable((By.LINK_TEXT, "Ir para site de autenticação"))
+        # ).click()
+
         self.wait.until(
-            EC.element_to_be_clickable((By.LINK_TEXT, "Ir para site de autenticação"))
+            EC.element_to_be_clickable(
+                (By.XPATH, "//a[contains(text(),'autenticação')]")
+            )
         ).click()
 
         print("[WEDUKA] Realizando login...")

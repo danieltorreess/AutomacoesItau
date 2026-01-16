@@ -192,4 +192,8 @@ git add .
 git commit -m "descrição"
 git push
 
+✔ Após clonar o repositório rodar as conferências:
+git status
+git remote -v
+
 ✔ Documentar cada nova automação no README
