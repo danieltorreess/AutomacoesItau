@@ -197,3 +197,10 @@ git status
 git remote -v
 
 ✔ Documentar cada nova automação no README
+
+
+
+
+## Alelo
+Alelo\ConverterFormatoAcelera.py
+\\brsbesrv960\Publico\REPORTS\ALELO\ACELERA
