@@ -1,0 +1,22 @@
+import os
+import fnmatch
+
+
+class OperacaoLibrasDownloader:
+    """
+    Localiza o anexo correto e salva com nome fixo.
+    """
+
+    def __init__(self, output_dir):
+        self.output_dir = output_dir
+
+    def salvar_anexo_padrao(self, email, padrao_nome, nome_final):
+        for att in email.Attachments:
+            nome_original = att.FileName
+
+            if fnmatch.fnmatch(nome_original, padrao_nome):
+                caminho_final = os.path.join(self.output_dir, nome_final)
+                att.SaveAsFile(caminho_final)
+                return caminho_final
+
+        return None
