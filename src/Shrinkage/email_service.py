@@ -52,13 +52,23 @@ class EmailServiceShrinkage:
     # ---------------------------------------------------------
     def buscar_emails_ultimos_dias(self, dias=3):
         folder = self._get_target_folder()
+
         mensagens = []
 
-        folder.Items.Sort("[ReceivedTime]", True)  # mais novos primeiro
+        hoje = datetime.today()
+        inicio = (hoje - timedelta(days=dias)).replace(
+            hour=0, minute=0, second=0, microsecond=0
+        )
 
-        hoje = datetime.today().date()
+        filtro = (
+            f"[ReceivedTime] >= '{inicio.strftime('%m/%d/%Y %H:%M %p')}'"
+        )
 
-        for msg in folder.Items:
+        items = folder.Items
+        items.Sort("[ReceivedTime]", True)
+        itens_filtrados = items.Restrict(filtro)
+
+        for msg in itens_filtrados:
             if msg.Class != 43:
                 continue
 
@@ -66,15 +76,10 @@ class EmailServiceShrinkage:
             if "relatórios att" not in assunto:
                 continue
 
-            # diferença de dias
-            diff = (hoje - msg.ReceivedTime.date()).days
-
-            if 0 <= diff < dias:
-                # precisa conter um .msg dentro
-                for att in msg.Attachments:
-                    if att.FileName.lower().endswith(".msg"):
-                        mensagens.append(msg)
-                        break
+            for att in msg.Attachments:
+                if att.FileName.lower().endswith((".xls", ".xlsx", ".xlsm", ".xlsb")):
+                    mensagens.append(msg)
+                    break
 
         return mensagens
 
