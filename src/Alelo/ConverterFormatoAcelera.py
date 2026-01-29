@@ -1,3 +1,4 @@
+#type:ignore
 import os
 import win32com.client
 
