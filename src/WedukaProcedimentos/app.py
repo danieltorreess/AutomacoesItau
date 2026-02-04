@@ -4,7 +4,8 @@ from pathlib import Path
 from dotenv import load_dotenv
 
 from src.WedukaProcedimentos import config
-from src.WedukaProcedimentos.browser import get_browser
+# from src.WedukaProcedimentos.browser import get_browser
+from src.WedukaProcedimentos.browser_edge import get_browser
 from src.WedukaProcedimentos.weduka_bot import WedukaBot
 
 
