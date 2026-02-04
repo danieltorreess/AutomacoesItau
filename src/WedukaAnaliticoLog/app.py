@@ -10,7 +10,12 @@ from src.WedukaAnaliticoLog.file_utils import mover_para_bkp
 PASTA_ANALITICO = r"\\BRSBESRV960\Publico\REPORTS\ITAU\WEDUKA_TREINAMENTO\AnaliticoDiario"
 PASTA_BKP = os.path.join(PASTA_ANALITICO, "BKP")
 
-ASSUNTO_EMAIL = "LOG DE ACESSO DIARIO WEDUKA"
+# 🔹 Assuntos aceitos (antigo + novos)
+ASSUNTOS_EMAIL = [
+    "LOG DE ACESSO DIARIO WEDUKA",
+    "Relatórios de Log Diários - Weduka",
+    "Relatório de Log Diário - Weduka",
+]
 
 PADRAO_ANEXO = "Analitico_Log_de_acesso_diario*.xlsx"
 NOME_FIXO_SAIDA = "Analitico_Log_de_acesso_diario.xlsx"
@@ -24,13 +29,14 @@ def main():
     downloader = WedukaDownloader(PASTA_ANALITICO)
 
     # --- Busca e-mail ---
-    email = email_service.buscar_ultimo_email(ASSUNTO_EMAIL)
+    email = email_service.buscar_ultimo_email(ASSUNTOS_EMAIL)
 
     if not email:
-        print("⚠️ Nenhum e-mail encontrado.")
+        print("⚠️ Nenhum e-mail encontrado para os assuntos configurados.")
         return
 
     print(f"📨 Último e-mail recebido em {email.ReceivedTime}")
+    print(f"📌 Assunto: {email.Subject}")
 
     # --- Backup do arquivo atual ---
     caminho_atual = os.path.join(PASTA_ANALITICO, NOME_FIXO_SAIDA)

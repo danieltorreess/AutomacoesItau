@@ -17,8 +17,19 @@ class EmailServiceWeduka:
         weduka = itau.Folders["WedukaTreinamentos"]
         return weduka
 
-    def buscar_ultimo_email(self, assunto_alvo: str, dias=5):
+    def buscar_ultimo_email(self, assuntos_alvo, dias=5):
+        """
+        assuntos_alvo: str ou list[str]
+        Retorna o e-mail mais recente que contenha qualquer
+        um dos assuntos informados.
+        """
         pasta = self._get_folder()
+
+        # 🔒 Normaliza para lista
+        if isinstance(assuntos_alvo, str):
+            assuntos_alvo = [assuntos_alvo]
+
+        assuntos_alvo = [a.lower() for a in assuntos_alvo]
 
         mensagens_validas = []
         hoje = datetime.now().date()
@@ -28,7 +39,10 @@ class EmailServiceWeduka:
             if msg.Class != 43:  # MailItem
                 continue
 
-            if assunto_alvo.lower() not in msg.Subject.lower():
+            assunto_msg = (msg.Subject or "").lower()
+
+            # 🔑 Match com qualquer assunto permitido
+            if not any(a in assunto_msg for a in assuntos_alvo):
                 continue
 
             if msg.ReceivedTime.date() < limite:
