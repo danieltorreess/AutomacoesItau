@@ -34,7 +34,6 @@ Nunca usar pip install diretamente.
 O SISGAG bloqueia. Sempre usar python -m pip.
 
 Exemplos corretos:
-
 python -m pip install --upgrade pip
 python -m pip install pandas openpyxl
 python -m pip install pywin32
@@ -96,43 +95,107 @@ python -m src.WedukaProcedimentos.app
 Baixa anexo da base de analítico de log diário do Weduka.
 python -m src.WedukaAnaliticoLog.app
 
-🗂 10. Estrutura completa do projeto
-DesenvolvimentoBackEnd/
+▶️ Femme/ReguaAcionamento
+Extrai a base da ferramenta live da Femme para régua de acionamento
+python -m src.Femme.ReguaAcionamento.app
+
+▶️ SMSLoginLogout
+Destrava arquivo excel via XML e monta a base geral de tempos de pausas
+python -m src.SMSLoginLogout.app
+
+▶️ OperacaoLibras
+Extrair base do anexo e salva na rede
+python -m src.OperacaoLibras.app
+
+▶️ FalhasOperacionais
+Extrair base do downloads e orquestra para salvar na rede
+python -m src.FalhasOperacionais.app
+
+▶️ Envio dos relatórios para o KPI
+Envia todos os MIS para o KPI
+python -m src.EnvioRelatorios.app
+
+▶️ Férias Alelo
+RPAs construídos pela Atento para atualização das bases de Alelo
+
+10. DesenvolvimentoBackEnd/
+│
+├── downloads/                       # Downloads temporários dos RPAs
 │
 ├── src/
+│   │
+│   ├── Alelo/
+│   │   ├── __pycache__/
+│   │   ├── AjustaLayoutBaseBlip.py
+│   │   ├── Consolida_Pesquisa.py
+│   │   ├── ConverterFormatoAcelera.py
+│   │   ├── ETLAleloBKOCredit.py
+│   │   ├── IntegrarAleloEdge.py
+│   │   └── PlusoftAleloEdge.py
+│   │
 │   ├── BKO/
 │   │   ├── __pycache__/
 │   │   ├── app.py
 │   │   ├── email_service.py
-│   │   ├── processor.py
+│   │   └── processor.py
 │   │
 │   ├── CSR/
 │   │   ├── __pycache__/
 │   │   ├── __init__.py
 │   │   ├── app.py
 │   │   ├── downloader.py
-│   │   ├── email_service.py
+│   │   └── email_service.py
+│   │
+│   ├── EnvioRelatorios/
+│   │   ├── __pycache__/
+│   │   ├── app.py
+│   │   └── email_sender.py
 │   │
 │   ├── FalhasOperacionais/
 │   │   ├── __pycache__/
-│   │   ├── app.py
+│   │   └── app.py
+│   │
+│   ├── Femme/
+│   │   └── ReguaAcionamento/
+│   │       ├── __pycache__/
+│   │       ├── app.py
+│   │       ├── browser_edge.py
+│   │       ├── config.py
+│   │       ├── regua_acionamento_bot.py
+│   │       └── utils.py
 │   │
 │   ├── ItauScout/
 │   │   ├── __pycache__/
+│   │   └── app.py
+│   │
+│   ├── ItauSiteGov/
+│   │   ├── __pycache__/
 │   │   ├── app.py
+│   │   ├── browser.py
+│   │   ├── config.py
+│   │   ├── login.py
+│   │   ├── navigation.py
+│   │   └── utils.py
+│   │
+│   ├── OperacaoLibras/
+│   │   ├── __pycache__/
+│   │   ├── app.py
+│   │   ├── downloader.py
+│   │   ├── email_service.py
+│   │   └── file_utils.py
 │   │
 │   ├── RAeGOV/
 │   │   ├── __pycache__/
 │   │   ├── app.py
 │   │   ├── email_service.py
-│   │   ├── processor.py
+│   │   └── processor.py
 │   │
 │   ├── SAFRA/
 │   │   ├── __pycache__/
 │   │   ├── app.py
 │   │   ├── downloader.py
 │   │   ├── email_service.py
-│   │   ├── excel_utils.py
+│   │   └── excel_utils.py
 │   │
 │   ├── Shrinkage/
 │   │   ├── __pycache__/
@@ -141,26 +204,49 @@ DesenvolvimentoBackEnd/
 │   │   ├── atendimento_processor.py
 │   │   ├── downloader.py
 │   │   ├── email_service.py
-│   │   ├── msg_extractor.py
+│   │   └── msg_extractor.py
 │   │
-│   ├── WedukaTreinamento/
+│   ├── SMSLoginLogout/
 │   │   ├── __pycache__/
 │   │   ├── app.py
+│   │   └── explorador_login_logout_oficial.py
+│   │
+│   ├── WedukaAnaliticoLog/
+│   │   ├── __pycache__/
+│   │   ├── app.py
+│   │   ├── downloader.py
+│   │   ├── email_service.py
+│   │   └── file_utils.py
+│   │
+│   ├── WedukaIncidentes/
+│   │   ├── __pycache__/
+│   │   ├── app.py
+│   │   ├── browser_edge.py
+│   │   ├── config.py
+│   │   ├── utils.py
+│   │   └── weduka_incidentes_bot.py
+│   │
+│   ├── WedukaProcedimentos/
+│   │   ├── __pycache__/
+│   │   ├── app.py
+│   │   ├── browser_edge.py
 │   │   ├── browser.py
 │   │   ├── config.py
 │   │   ├── utils.py
 │   │   ├── weduka_bot.py
-│   │   ├── test_chrome.py
-│   │   ├── README.md
+│   │   └── README.md
 │   │
+│   └── __init__.py   # (opcional, mas recomendado)
+│
 ├── tests/
 │   ├── debug_position.py
 │   ├── testar_explosao.py
-│   ├── teste.py
+│   └── teste.py
 │
-├── venv/                      # Ambiente virtual (ignorado no Git)
+├── venv/                           # Ambiente virtual (ignorado no Git)
 │
-├── .env                       # Variáveis de ambiente (ignorado)
+├── .env                            # Variáveis de ambiente (ignorado)
+├── .env.example
 ├── .gitignore
 ├── README.md
 ├── requirements.txt
