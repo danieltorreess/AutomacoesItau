@@ -14,7 +14,8 @@ ASSUNTO_EMAIL = (
     "Relatório de Atendimento / Pesquisas de Atendimento / Detratoras - Libras Itaú"
 )
 
-PADRAO_ANEXO = "Pesquisas de Atendimento atualizado*.xlsx"
+# PADRAO_ANEXO = "Pesquisas de Atendimento atualizado*.xlsx"
+PADRAO_ANEXO = "*Pesquisas*Atendimento*Atualizado*.xlsx"
 NOME_FIXO_SAIDA = "PesquisaAtendimento.xlsx"
 NOME_BASE_BKP = "PesquisaAtendimento"
 
