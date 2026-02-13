@@ -27,16 +27,18 @@ class EmailService:
         """
         Volta no tempo até encontrar um dia com e-mails válidos,
         considerando finais de semana e feriados.
+        Agora valida apenas:
+        - presença de "CSR IC"
+        - presença da data no assunto
         """
+
         hoje = datetime.today()
+
+        folder = self._get_target_folder()
 
         for i in range(1, max_dias + 1):
             data_teste = hoje - timedelta(days=i)
             data_str = data_teste.strftime("%d.%m.%Y")
-
-            regex = rf"BASE PARA DISCADOR CSR IC {data_str}\s+\d{{4}}\s+Horas\.?"
-
-            folder = self._get_target_folder()
 
             for msg in folder.Items:
                 if msg.Class != 43:
@@ -44,11 +46,13 @@ class EmailService:
 
                 assunto = self._normalizar_assunto(msg.Subject)
 
-                if re.fullmatch(regex, assunto, re.IGNORECASE):
-                    return data_teste  # 🔥 achou!
+                if (
+                    "CSR IC" in assunto.upper()
+                    and data_str in assunto
+                ):
+                    return data_teste
 
         raise Exception("❌ Nenhuma base encontrada nos últimos dias.")
-
 
     def _normalizar_assunto(self, assunto: str) -> str:
         """
@@ -63,8 +67,9 @@ class EmailService:
 
     def buscar_emails_do_dia_anterior(self):
         """
-        Retorna e-mails no padrão:
-        BASE PARA DISCADOR CSR IC DD.MM.YYYY HHMM Horas(.)
+        Retorna e-mails que contenham:
+        - CSR IC
+        - Data de referência
         """
 
         folder = self._get_target_folder()
@@ -73,21 +78,18 @@ class EmailService:
         self.data_referencia = referencia
         data_str = referencia.strftime("%d.%m.%Y")
 
-        # Regex tolerante a:
-        # - múltiplos espaços
-        # - ponto final opcional
-        regex = rf"BASE PARA DISCADOR CSR IC {data_str}\s+\d{{4}}\s+Horas\.?"
-
         mensagens_encontradas = []
 
         for msg in folder.Items:
-            if msg.Class != 43:  # MailItem
+            if msg.Class != 43:
                 continue
 
-            assunto_original = msg.Subject
-            assunto = self._normalizar_assunto(assunto_original)
+            assunto = self._normalizar_assunto(msg.Subject)
 
-            if re.fullmatch(regex, assunto, re.IGNORECASE):
+            if (
+                "CSR IC" in assunto.upper()
+                and data_str in assunto
+            ):
                 mensagens_encontradas.append(msg)
 
         return mensagens_encontradas
