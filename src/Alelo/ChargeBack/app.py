@@ -5,6 +5,7 @@ from src.Alelo.ChargeBack.email_service import EmailServiceChargeBack
 from src.Alelo.ChargeBack.downloader import ChargeBackDownloader
 from src.Alelo.ChargeBack.processor_3580 import processar_3580
 from src.Alelo.ChargeBack.processor_3547 import processar_3547
+from src.Alelo.ChargeBack.processor_dap import processar_dap
 
 
 ASSUNTO_EMAIL = "RE: Atualização bases intercâmbio"
@@ -140,7 +141,35 @@ def main():
             print("🗑 Limpando TEMP...")
 
         elif "dap" in nome:
-            print("⚠️ DAP ainda não implementado.")
+
+            print("➡ Identificado como DAP")
+
+            arquivo_tratado = processar_dap(caminho)
+
+            pasta_dap = PASTA_REDE / "DAP"
+            pasta_bkp = pasta_dap / "BCK"
+
+            pasta_dap.mkdir(parents=True, exist_ok=True)
+            pasta_bkp.mkdir(parents=True, exist_ok=True)
+
+            destino_final = pasta_dap / caminho.name
+
+            # BKP incremental
+            contador = 1
+            while True:
+                nome_bkp = caminho.stem + f"_{contador}.xlsx"
+                caminho_bkp = pasta_bkp / nome_bkp
+
+                if not caminho_bkp.exists():
+                    break
+
+                contador += 1
+
+            print(f"📦 Salvando BKP: {caminho_bkp.name}")
+            shutil.copy2(arquivo_tratado, caminho_bkp)
+
+            print("📤 Salvando arquivo na raiz DAP...")
+            shutil.copy2(arquivo_tratado, destino_final)
 
         else:
             print("⚠️ Anexo ignorado.")
