@@ -1,4 +1,5 @@
 from pathlib import Path
+from datetime import datetime, timedelta
 
 from src.Alelo.BasePBI.email_service import EmailServiceAleloBasePBI
 from src.Alelo.BasePBI.link_extractor import extrair_link_download
@@ -16,48 +17,67 @@ DESTINOS = [
 ]
 
 
+def obter_datas_para_processar():
+    hoje = datetime.now().date()
+    dia_semana = hoje.weekday()  # 0 = segunda
+
+    if dia_semana == 0:
+        # Segunda-feira → sábado, domingo e segunda
+        return [
+            hoje - timedelta(days=2),
+            hoje - timedelta(days=1),
+            hoje
+        ]
+    else:
+        # Terça a sexta → apenas hoje
+        return [hoje]
+
+
 def main():
 
     print("\n🚀 Iniciando RPA ALELO - BasePBI")
 
     email_service = EmailServiceAleloBasePBI()
 
-    email = email_service.buscar_ultimo_email(ASSUNTO_BASE)
+    datas_para_processar = obter_datas_para_processar()
 
-    if not email:
-        print("⚠️ Nenhum e-mail encontrado.")
+    print(f"📅 Datas alvo: {datas_para_processar}")
+
+    emails = email_service.buscar_emails_por_datas(
+        ASSUNTO_BASE,
+        datas_para_processar
+    )
+
+    if not emails:
+        print("⚠️ Nenhum e-mail encontrado para as datas alvo.")
         return
 
-    print(f"📨 E-mail encontrado: {email.Subject}")
+    for email in emails:
 
-    # corpo = email.Body
+        print(f"\n📨 Processando e-mail: {email.Subject}")
+        print(f"📅 Data: {email.ReceivedTime.date()}")
 
-    # link = extrair_link_download(corpo)
+        html = email.HTMLBody
+        link = extrair_link_download(html)
 
-    html = email.HTMLBody
-    link = extrair_link_download(html)
+        if not link:
+            print("❌ Link de download não encontrado.")
+            continue
 
+        print(f"🔗 Link encontrado: {link}")
 
-    if not link:
-        print("❌ Link de download não encontrado.")
-        return
+        # Download
+        arquivo_baixado = baixar_arquivo(link, PASTA_TEMP)
+        print(f"⬇ Arquivo baixado: {arquivo_baixado}")
 
-    print(f"🔗 Link encontrado: {link}")
+        # Ajuste de nome
+        arquivo_renomeado = ajustar_nome_arquivo(arquivo_baixado)
+        print(f"✏ Nome ajustado: {arquivo_renomeado.name}")
 
-    # --- Download ---
-    arquivo_baixado = baixar_arquivo(link, PASTA_TEMP)
+        # Copiar para destinos
+        copiar_para_destinos(arquivo_renomeado, DESTINOS)
 
-    print(f"⬇ Arquivo baixado: {arquivo_baixado}")
-
-    # --- Ajusta nome ---
-    arquivo_renomeado = ajustar_nome_arquivo(arquivo_baixado)
-
-    print(f"✏ Nome ajustado: {arquivo_renomeado.name}")
-
-    # --- Copia para destinos ---
-    copiar_para_destinos(arquivo_renomeado, DESTINOS)
-
-    print("✅ Processo finalizado com sucesso.")
+    print("\n✅ Processo finalizado com sucesso.")
 
 
 if __name__ == "__main__":

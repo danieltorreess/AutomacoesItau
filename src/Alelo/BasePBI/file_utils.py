@@ -8,6 +8,10 @@ def ajustar_nome_arquivo(caminho_arquivo):
     """
 
     caminho = Path(caminho_arquivo)
+
+    if not caminho.exists():
+        raise FileNotFoundError(f"Arquivo não encontrado: {caminho}")
+
     novo_nome = caminho.name.replace("_atento", "")
     novo_caminho = caminho.parent / novo_nome
 
@@ -17,6 +21,8 @@ def ajustar_nome_arquivo(caminho_arquivo):
 
 
 def copiar_para_destinos(caminho_arquivo, destinos):
+
+    caminho_arquivo = Path(caminho_arquivo)
 
     for destino in destinos:
         destino_path = Path(destino)

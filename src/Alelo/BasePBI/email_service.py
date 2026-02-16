@@ -1,5 +1,5 @@
 import win32com.client as win32
-from datetime import datetime, timedelta
+from datetime import datetime
 
 
 class EmailServiceAleloBasePBI:
@@ -13,24 +13,33 @@ class EmailServiceAleloBasePBI:
         blip = alelo.Folders["BLIP"]
         return blip
 
-    def buscar_ultimo_email(self, assunto_base, dias=4):
+    def buscar_emails_por_datas(self, assunto_base, datas_alvo):
+        """
+        Retorna lista de emails cujo assunto contenha assunto_base
+        e cuja data esteja dentro das datas_alvo.
+        """
+
         pasta = self._get_folder()
         mensagens = pasta.Items
-
         mensagens.Sort("[ReceivedTime]", True)
 
-        hoje = datetime.now().date()
-        limite = hoje - timedelta(days=dias)
+        emails_encontrados = []
+        data_minima = min(datas_alvo)
 
         for msg in mensagens:
+
+            # Apenas MailItem
             if msg.Class != 43:
                 continue
 
             data_email = msg.ReceivedTime.date()
-            if data_email < limite:
+
+            # Como está ordenado DESC, se passou da menor data pode parar
+            if data_email < data_minima:
                 break
 
-            if assunto_base.lower() in (msg.Subject or "").lower():
-                return msg
+            if data_email in datas_alvo:
+                if assunto_base.lower() in (msg.Subject or "").lower():
+                    emails_encontrados.append(msg)
 
-        return None
+        return emails_encontrados
