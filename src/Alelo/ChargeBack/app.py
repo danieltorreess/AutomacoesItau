@@ -4,6 +4,7 @@ from pathlib import Path
 from src.Alelo.ChargeBack.email_service import EmailServiceChargeBack
 from src.Alelo.ChargeBack.downloader import ChargeBackDownloader
 from src.Alelo.ChargeBack.processor_3580 import processar_3580
+from src.Alelo.ChargeBack.processor_3547 import processar_3547
 
 
 ASSUNTO_EMAIL = "RE: Atualização bases intercâmbio"
@@ -110,7 +111,33 @@ def main():
             )
 
         elif "3547" in nome:
-            print("⚠️ 3547 ainda não implementado.")
+
+            print("➡ Identificado como 3547")
+
+            arquivo_tratado = processar_3547(caminho)
+
+            destino_raiz = PASTA_REDE / "Relatório_3547_Consolidado.xlsx"
+            pasta_bkp_3547 = PASTA_REDE / "BCK" / "3547"
+            pasta_bkp_3547.mkdir(parents=True, exist_ok=True)
+
+            # Gerar nome incremental BKP
+            contador = 1
+            while True:
+                nome_bkp = f"Relatório_3547_Consolidado_{contador}.xlsx"
+                caminho_bkp = pasta_bkp_3547 / nome_bkp
+
+                if not caminho_bkp.exists():
+                    break
+
+                contador += 1
+
+            print(f"📦 Salvando BKP: {caminho_bkp.name}")
+            shutil.copy2(arquivo_tratado, caminho_bkp)
+
+            print("📤 Salvando arquivo na raiz para SSIS...")
+            shutil.copy2(arquivo_tratado, destino_raiz)
+
+            print("🗑 Limpando TEMP...")
 
         elif "dap" in nome:
             print("⚠️ DAP ainda não implementado.")
