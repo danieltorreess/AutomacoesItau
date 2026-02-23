@@ -75,49 +75,66 @@ def mover_para_bkp():
     logger.info(f"Backup criado: {novo_nome.name}")
 
 
-def consolidar_excel_para_csv(app_path: Path, agencia_path: Path) -> Path:
+def consolidar_excel_para_csv(app_path: Path | None, agencia_path: Path | None) -> Path:
     logger.info("Abrindo Excel para consolidação...")
 
     excel = win32.DispatchEx("Excel.Application")
     excel.Visible = False
     excel.DisplayAlerts = False
 
+    wb_app = None
+    wb_ag = None
+
     try:
-        # Abre os dois arquivos
-        wb_app = excel.Workbooks.Open(str(app_path))
-        wb_ag = excel.Workbooks.Open(str(agencia_path))
-
-        ws_app = wb_app.Worksheets("Exportacao")
-        ws_ag = wb_ag.Worksheets("Exportacao")
-
-        # Remove filtros
-        if ws_app.AutoFilterMode:
-            ws_app.AutoFilterMode = False
-        if ws_ag.AutoFilterMode:
-            ws_ag.AutoFilterMode = False
-
-        # Cria novo workbook consolidado
         wb_final = excel.Workbooks.Add()
         ws_final = wb_final.Worksheets(1)
+        linha_atual = 1
 
-        logger.info("Copiando dados do APP...")
-        ws_app.UsedRange.Copy(ws_final.Range("A1"))
+        # ======================
+        # PROCESSA APP
+        # ======================
+        if app_path:
+            logger.info("Processando arquivo APP...")
+            wb_app = excel.Workbooks.Open(str(app_path))
+            ws_app = wb_app.Worksheets("Exportacao")
 
-        # Descobre última linha usada após APP
-        last_row = ws_final.Cells(ws_final.Rows.Count, 1).End(-4162).Row  # xlUp
+            if ws_app.AutoFilterMode:
+                ws_app.AutoFilterMode = False
 
-        logger.info("Copiando dados da AGÊNCIA...")
-        # Descobre limites da planilha AGÊNCIA
-        last_row_ag = ws_ag.Cells(ws_ag.Rows.Count, 1).End(-4162).Row  # xlUp
-        last_col_ag = ws_ag.Cells(1, ws_ag.Columns.Count).End(-4159).Column  # xlToLeft
+            ws_app.UsedRange.Copy(ws_final.Range(f"A{linha_atual}"))
 
-        # Intervalo sem cabeçalho (começa na linha 2)
-        range_ag = ws_ag.Range(
-            ws_ag.Cells(2, 1),
-            ws_ag.Cells(last_row_ag, last_col_ag)
-        )
+            linha_atual = ws_final.Cells(ws_final.Rows.Count, 1).End(-4162).Row + 1
+            logger.info("APP consolidado com sucesso.")
 
-        range_ag.Copy(ws_final.Cells(last_row + 1, 1))
+        # ======================
+        # PROCESSA AGÊNCIA
+        # ======================
+        if agencia_path:
+            logger.info("Processando arquivo AGÊNCIA...")
+            wb_ag = excel.Workbooks.Open(str(agencia_path))
+            ws_ag = wb_ag.Worksheets("Exportacao")
+
+            if ws_ag.AutoFilterMode:
+                ws_ag.AutoFilterMode = False
+
+            last_row_ag = ws_ag.Cells(ws_ag.Rows.Count, 1).End(-4162).Row
+            last_col_ag = ws_ag.Cells(1, ws_ag.Columns.Count).End(-4159).Column
+
+            # Se já inseriu APP, remove cabeçalho da AGÊNCIA
+            if app_path:
+                range_ag = ws_ag.Range(
+                    ws_ag.Cells(2, 1),
+                    ws_ag.Cells(last_row_ag, last_col_ag)
+                )
+            else:
+                range_ag = ws_ag.Range(
+                    ws_ag.Cells(1, 1),
+                    ws_ag.Cells(last_row_ag, last_col_ag)
+                )
+
+            range_ag.Copy(ws_final.Cells(linha_atual, 1))
+            logger.info("AGÊNCIA consolidado com sucesso.")
+
         caminho_csv = PASTA_BASE / NOME_FIXO_REDE
 
         if caminho_csv.exists():
@@ -129,12 +146,15 @@ def consolidar_excel_para_csv(app_path: Path, agencia_path: Path) -> Path:
         logger.info("CSV consolidado gerado com sucesso.")
 
     finally:
-        wb_app.Close(False)
-        wb_ag.Close(False)
+        if wb_app:
+            wb_app.Close(False)
+        if wb_ag:
+            wb_ag.Close(False)
+
         excel.Quit()
         logger.info("Excel finalizado.")
 
-    return caminho_csv
+    return caminho_csv  
 
 
 def main():
@@ -145,9 +165,9 @@ def main():
         arquivo_app = localizar_arquivo_recente(PADRAO_APP)
         arquivo_agencia = localizar_arquivo_recente(PADRAO_AGENCIA)
 
-        if not arquivo_app or not arquivo_agencia:
+        if not arquivo_app and not arquivo_agencia:
+            logger.warning("Nenhum arquivo disponível para processamento.")
             return
-
         mover_para_bkp()
 
         csv_final = consolidar_excel_para_csv(arquivo_app, arquivo_agencia)
