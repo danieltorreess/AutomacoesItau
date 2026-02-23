@@ -89,6 +89,17 @@ def main():
     print(f"📎 Total de anexos baixados: {len(anexos)}")
     print("===================================================")
 
+    # ==========================================================
+    # 🔎 FASE 1 - IDENTIFICAÇÃO INICIAL
+    # ==========================================================
+
+    print("\n🧠 Iniciando identificação inteligente dos anexos...")
+    print("===================================================")
+
+    arquivos_processados = set()
+
+    print(f"\n📦 Total de anexos recebidos: {len(anexos)}")
+
     for arquivo in anexos:
 
         caminho = Path(arquivo)
@@ -97,9 +108,13 @@ def main():
         print(f"\n🔎 Analisando anexo: {caminho.name}")
         print("---------------------------------------------------")
 
+        # ------------------------------------------------------
+        # 3580
+        # ------------------------------------------------------
         if "3580" in nome:
 
-            print("➡ Identificado como 3580")
+            print("🟢 Regra: nome contém '3580'")
+            print("➡ Classificado como BASE 3580")
 
             arquivo_tratado = processar_3580(caminho)
 
@@ -111,38 +126,16 @@ def main():
                 subpasta_bkp="3580"
             )
 
-        elif "3547" in nome:
+            arquivos_processados.add(arquivo)
+            continue
 
-            print("➡ Identificado como 3547")
+        # ------------------------------------------------------
+        # DAP
+        # ------------------------------------------------------
+        if "dap" in nome:
 
-            arquivo_tratado = processar_3547(caminho)
-
-            destino_raiz = PASTA_REDE / "Relatório_3547_Consolidado.xlsx"
-            pasta_bkp_3547 = PASTA_REDE / "BCK" / "3547"
-            pasta_bkp_3547.mkdir(parents=True, exist_ok=True)
-
-            # Gerar nome incremental BKP
-            contador = 1
-            while True:
-                nome_bkp = f"Relatório_3547_Consolidado_{contador}.xlsx"
-                caminho_bkp = pasta_bkp_3547 / nome_bkp
-
-                if not caminho_bkp.exists():
-                    break
-
-                contador += 1
-
-            print(f"📦 Salvando BKP: {caminho_bkp.name}")
-            shutil.copy2(arquivo_tratado, caminho_bkp)
-
-            print("📤 Salvando arquivo na raiz para SSIS...")
-            shutil.copy2(arquivo_tratado, destino_raiz)
-
-            print("🗑 Limpando TEMP...")
-
-        elif "dap" in nome:
-
-            print("➡ Identificado como DAP")
+            print("🟢 Regra: nome contém 'dap'")
+            print("➡ Classificado como BASE DAP")
 
             arquivo_tratado = processar_dap(caminho)
 
@@ -154,7 +147,6 @@ def main():
 
             destino_final = pasta_dap / caminho.name
 
-            # BKP incremental
             contador = 1
             while True:
                 nome_bkp = caminho.stem + f"_{contador}.xlsx"
@@ -165,18 +157,84 @@ def main():
 
                 contador += 1
 
-            print(f"📦 Salvando BKP: {caminho_bkp.name}")
+            print(f"📦 BKP gerado: {caminho_bkp.name}")
             shutil.copy2(arquivo_tratado, caminho_bkp)
 
-            print("📤 Salvando arquivo na raiz DAP...")
+            print("📤 Arquivo DAP salvo na raiz.")
             shutil.copy2(arquivo_tratado, destino_final)
 
-        else:
-            print("⚠️ Anexo ignorado.")
+            arquivos_processados.add(arquivo)
+            continue
+
+        # ------------------------------------------------------
+        # Ainda não classificado
+        # ------------------------------------------------------
+        print("🟡 Nenhuma regra direta aplicada (não é 3580 nem DAP).")
+        print("🔎 Arquivo ficará aguardando decisão como possível 3547.")
+
+    # ==========================================================
+    # 🔥 FASE 2 - DEFINIÇÃO AUTOMÁTICA DO 3547
+    # ==========================================================
+
+    print("\n🧠 Iniciando verificação de arquivos restantes...")
+    print("===================================================")
+
+    arquivos_restantes = [a for a in anexos if a not in arquivos_processados]
+
+    print(f"📌 Arquivos já processados: {len(arquivos_processados)}")
+    print(f"📌 Arquivos restantes: {len(arquivos_restantes)}")
+
+    if len(arquivos_restantes) == 1:
+
+        caminho = Path(arquivos_restantes[0])
+
+        print("\n🟢 Regra de negócio aplicada:")
+        print("➡ Arquivo restante será tratado como BASE 3547")
+        print(f"📄 Arquivo identificado: {caminho.name}")
+        print("---------------------------------------------------")
+
+        arquivo_tratado = processar_3547(caminho)
+
+        destino_raiz = PASTA_REDE / "Relatório_3547_Consolidado.xlsx"
+        pasta_bkp_3547 = PASTA_REDE / "BCK" / "3547"
+        pasta_bkp_3547.mkdir(parents=True, exist_ok=True)
+
+        contador = 1
+        while True:
+            nome_bkp = f"Relatório_3547_Consolidado_{contador}.xlsx"
+            caminho_bkp = pasta_bkp_3547 / nome_bkp
+
+            if not caminho_bkp.exists():
+                break
+
+            contador += 1
+
+        print(f"📦 BKP gerado: {caminho_bkp.name}")
+        shutil.copy2(arquivo_tratado, caminho_bkp)
+
+        print("📤 Arquivo 3547 salvo na raiz para SSIS.")
+        shutil.copy2(arquivo_tratado, destino_raiz)
+
+    elif len(arquivos_restantes) == 0:
+
+        print("\nℹ️ Nenhum arquivo restante.")
+        print("➡ Apenas DAP e 3580 foram recebidos.")
+        print("✔ Processo segue normalmente.")
+
+    else:
+
+        print("\n🔴 ALERTA DE INCONSISTÊNCIA")
+        print("Mais de um arquivo restante encontrado.")
+        print("Isso foge da regra esperada (máximo 3 anexos).")
+        print("\nArquivos pendentes:")
+
+        for a in arquivos_restantes:
+            print(f"- {Path(a).name}")
+
+        print("\n⚠️ Verifique manualmente.")
 
     print("\n===================================================")
     print("🏁 Processo finalizado com sucesso.")
-
 
 if __name__ == "__main__":
     main()
