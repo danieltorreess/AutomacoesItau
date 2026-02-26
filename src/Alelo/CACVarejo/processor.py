@@ -1,4 +1,5 @@
-#type:ignore
+# type: ignore
+
 import pandas as pd
 from pathlib import Path
 import logging
@@ -14,32 +15,28 @@ def encontrar_arquivo(download_dir: Path, nome_arquivo: str) -> Path | None:
 
 
 def processar_e_salvar_csv(
-    caminho_origem: Path,
-    caminho_destino: Path,
+    caminho_xlsx: Path,
+    caminho_destino_csv: Path,
     logger: logging.Logger
 ) -> None:
 
-    logger.info(f"Lendo arquivo Excel: {caminho_origem}")
+    logger.info(f"🔄 Processando {caminho_xlsx.name}")
 
-    # Lê tudo como string para evitar conversão automática
+    # 🔥 Leitura simples, sem alterar encoding
     df = pd.read_excel(
-        caminho_origem,
+        caminho_xlsx,
         dtype=str
     )
 
-    logger.info(f"Linhas carregadas: {len(df)}")
+    # Garante diretório
+    caminho_destino_csv.parent.mkdir(parents=True, exist_ok=True)
 
-    caminho_destino.parent.mkdir(parents=True, exist_ok=True)
+    # 🔥 MESMO PADRÃO DO BEEDOO
+    df.to_csv(
+        caminho_destino_csv,
+        index=False,
+        sep=";",                 # padrão BR
+        encoding="utf-8-sig"     # Excel friendly
+    )
 
-    logger.info("Salvando CSV no padrão Excel Brasil")
-
-    with open(caminho_destino, "w", encoding="utf-8-sig", newline="") as f:
-        f.write("sep=;\n")
-        df.to_csv(
-            f,
-            sep=";",
-            index=False,
-            line_terminator="\r\n"
-        )
-
-    logger.info("CSV salvo com sucesso.")
+    logger.info(f"✅ CSV gerado: {caminho_destino_csv}")
