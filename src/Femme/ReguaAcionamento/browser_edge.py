@@ -4,6 +4,7 @@ from selenium.webdriver.edge.service import Service
 
 
 def get_browser(download_dir):
+
     options = Options()
     options.add_argument("--start-maximized")
 
