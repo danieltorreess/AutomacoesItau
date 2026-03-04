@@ -1,0 +1,18 @@
+EMAIL_SUBJECTS = [
+    "Relatório Genesys Cloud de Lucas Pereira Gaspar",
+    "Relatório Genesys Cloud de Patricia Reis dos Santos"
+]
+
+ATTACHMENTS = {
+    "AGENDAMENTO": "DESEMPENHO DA FILA - AGENDAMENTO ATENTO D1.csv",
+    "AUTORIZACAO": "DESEMPENHO DA FILA - AUTORIZACAO D1.csv",
+    "PRESTADOR": "DESEMPENHO DA FILA - PRESTADOR D1.csv"
+}
+
+BASE_PATH = r"\\brsbesrv960\publico\REPORTS\UNIMED BH"
+
+BKP_PATHS = {
+    "AGENDAMENTO": BASE_PATH + r"\BKP\AGENDAMENTO",
+    "AUTORIZACAO": BASE_PATH + r"\BKP\AUTORIZACAO",
+    "PRESTADOR": BASE_PATH + r"\BKP\PRESTADOR"
+}
