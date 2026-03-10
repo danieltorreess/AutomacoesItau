@@ -169,8 +169,10 @@ def logar():
     
     time.sleep(1)
 # -->> DIGITAR SENHA
-    navegador.find_element('xpath', '//*[@id="login__password"]').send_keys("Lilo!@220886")  # senha
+    navegador.find_element('xpath', '//*[@id="login__password"]').send_keys("Nina!@220886")  # senha
     time.sleep(1)
+
+    ## Senha nova: Nina!@220886
 # -->> DIGITAR ENTRAR
     navegador.find_element( 'xpath', '/html/body/div/div[1]/div[1]/div[2]/div/div/div/form/div[2]/div[1]/div[5]/button').click()  # entrar
 
